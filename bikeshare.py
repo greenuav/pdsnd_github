@@ -10,11 +10,11 @@ import time
 
 
 def get_city():
-    '''Asks the user for a city and returns the filename for that city's bike share data.
-    Args:
-        none.
-    Returns:
-        (str) Filename for a city's bikeshare data.
+    #Asks the user for a city and returns the filename for that city's bike share data.
+    #Args:
+    #    none.
+    #Returns:
+    #    (str) Filename for a city's bikeshare data.
     '''
     city = ''
     while city.lower() not in ['chicago', 'new york', 'washington']:
@@ -47,12 +47,12 @@ def get_time_period():
     return time_period
 
 def get_month():
-    '''Asks the user for a month and returns the specified month.
-    Args:
-        none.
-    Returns:
-        (tuple) Lower limit, upper limit of month for the bikeshare data.
-    '''
+    #Asks the user for a month and returns the specified month.
+    #Args:
+    #    none.
+    #Returns:
+    #    (tuple) Lower limit, upper limit of month for the bikeshare data.
+    #
     month_input = ''
     months_dict = {'january': 1, 'february': 2, 'march': 3, 'april': 4,
                    'may': 5, 'june': 6}
@@ -66,12 +66,12 @@ def get_month():
     return ('2017-{}'.format(month), '2017-{}'.format(month + 1))
 
 def get_day():
-    '''Asks the user for a day and returns the specified day.
-    Args:
-        none.
-    Returns:
-        (tuple) Lower limit, upper limit of date for the bikeshare data.
-    '''
+    #Asks the user for a day and returns the specified day.
+    #Args:
+    #    none.
+    #Returns:
+    #    (tuple) Lower limit, upper limit of date for the bikeshare data.
+    #
     this_month = get_month()[0]
     month = int(this_month[5:])
     valid_date = False
@@ -95,24 +95,24 @@ def get_day():
     return (str(start_date), str(end_date))
 
 def popular_month(df):
-    '''Finds and prints the most popular month for start time.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the most popular month for start time.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     months = ['January', 'February', 'March', 'April', 'May', 'June']
     index = int(df['start_time'].dt.month.mode())
     most_pop_month = months[index - 1]
     print('The most popular month is {}.'.format(most_pop_month))
 
 def popular_day(df):
-    '''Finds and prints the most popular day of week (Monday, Tuesday, etc.) for start time.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the most popular day of week (Monday, Tuesday, etc.) for start time.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
                     'Saturday', 'Sunday']
     index = int(df['start_time'].dt.dayofweek.mode())
