@@ -5,7 +5,7 @@ Sunday 23rd June 2019
 Bikeshare project Udacity
 
 ### Description
-Describe what your project is about and what it does
+Using python, this project analyses US bikeshare data. Calculating statistics and returning data requested by the user by asking a series of questions.
 
 ### Files used
 Project creadet using the following files:
