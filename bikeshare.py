@@ -120,12 +120,12 @@ def popular_day(df):
     print('The most popular day of week for start time is {}.'.format(most_pop_day))
 
 def popular_hour(df):
-    '''Finds and prints the most popular hour of day for start time.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the most popular hour of day for start time.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     most_pop_hour = int(df['start_time'].dt.hour.mode())
     if most_pop_hour == 0:
         am_pm = 'am'
@@ -139,13 +139,13 @@ def popular_hour(df):
     print('The most popular hour of day for start time is {}{}.'.format(pop_hour_readable, am_pm))
 
 def trip_duration(df):
-    '''Finds and prints the total trip duration and average trip duration in
-       hours, minutes, and seconds.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the total trip duration and average trip duration in
+    #  hours, minutes, and seconds.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     total_duration = df['trip_duration'].sum()
     minute, second = divmod(total_duration, 60)
     hour, minute = divmod(minute, 60)
@@ -161,58 +161,58 @@ def trip_duration(df):
         print('The average trip duration is {} minutes and {} seconds.'.format(m, s))
 
 def popular_stations(df):
-    '''Finds and prints the most popular start station and most popular end station.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the most popular start station and most popular end station.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     pop_start = df['start_station'].mode().to_string(index = False)
     pop_end = df['end_station'].mode().to_string(index = False)
     print('The most popular start station is {}.'.format(pop_start))
     print('The most popular end station is {}.'.format(pop_end))
 
 def popular_trip(df):
-    '''Finds and prints the most popular trip.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the most popular trip.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     most_pop_trip = df['journey'].mode().to_string(index = False)
     # The 'journey' column is created in the statistics() function.
     print('The most popular trip is {}.'.format(most_pop_trip))
 
 def users(df):
-    '''Finds and prints the counts of each user type.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the counts of each user type.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     subs = df.query('user_type == "Subscriber"').user_type.count()
     cust = df.query('user_type == "Customer"').user_type.count()
     print('There are {} Subscribers and {} Customers.'.format(subs, cust))
 
 def gender(df):
-    '''Finds and prints the counts of gender.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    #Finds and prints the counts of gender.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     male_count = df.query('gender == "Male"').gender.count()
     female_count = df.query('gender == "Male"').gender.count()
     print('There are {} male users and {} female users.'.format(male_count, female_count))
 
 def birth_years(df):
-    ''' Finds and prints the earliest (i.e. oldest user), most recent (i.e.
-        youngest user), and most popular birth years.
-    Args:
-        bikeshare dataframe
-    Returns:
-        none
-    '''
+    # Finds and prints the earliest (i.e. oldest user), most recent (i.e.
+    #    youngest user), and most popular birth years.
+    #Args:
+    #    bikeshare dataframe
+    #Returns:
+    #    none
+    #
     earliest = int(df['birth_year'].min())
     latest = int(df['birth_year'].max())
     mode = int(df['birth_year'].mode())
@@ -220,14 +220,14 @@ def birth_years(df):
           '\nThe most popular birth year is {}.'.format(earliest, latest, mode))
 
 def display_data(df):
-    '''Displays five lines of data if the user specifies that they would like to.
-    After displaying five lines, ask the user if they would like to see five more,
-    continuing asking until they say stop.
-    Args:
-        data frame
-    Returns:
-        none
-    '''
+    #Displays five lines of data if the user specifies that they would like to.
+    #After displaying five lines, ask the user if they would like to see five more,
+    #continuing asking until they say stop.
+    #Args:
+    #    data frame
+    #Returns:
+    #    none
+    #
     def is_valid(display):
         if display.lower() in ['yes', 'no']:
             return True
@@ -269,13 +269,13 @@ def display_data(df):
 
 
 def statistics():
-    '''Calculates and prints out the descriptive statistics about a city and
-    time period specified by the user via raw input.
-    Args:
-        none.
-    Returns:
-        none.
-    '''
+    #Calculates and prints out the descriptive statistics about a city and
+    #time period specified by the user via raw input.
+    #Args:
+    #    none.
+    #Returns:
+    #    none.
+    #
     # Filter by city (Chicago, New York, Washington)
     city = get_city()
     print('Loading data...')
