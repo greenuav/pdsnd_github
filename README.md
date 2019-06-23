@@ -15,4 +15,4 @@ Project creadet using the following files:
 - washington.csv
 
 ### Credits
-Udacity materials, comments on udacity forums
+Udacity materials, comments on udacity forums. Google and stackoverflow community!
