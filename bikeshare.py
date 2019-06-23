@@ -1,274 +1,384 @@
-<!DOCTYPE HTML>
-<html>
+import pandas as pd
+from datetime import datetime
+from datetime import timedelta
+import time
 
-<head>
-    <meta charset="utf-8">
-
-    <title>bikeshare.py (editing)</title>
-    <link id="favicon" rel="shortcut icon" type="image/x-icon" href="/static/base/images/favicon-file.ico?v=e2776a7f45692c839d6eea7d7ff6f3b2">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" href="/static/components/jquery-ui/themes/smoothness/jquery-ui.min.css?v=3c2a865c832a1322285c55c6ed99abb2" type="text/css" />
-    <link rel="stylesheet" href="/static/components/jquery-typeahead/dist/jquery.typeahead.min.css?v=7afb461de36accb1aa133a1710f5bc56" type="text/css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    
-<link rel="stylesheet" href="/static/components/codemirror/lib/codemirror.css?v=288352df06a67ee35003b0981da414ac">
-<link rel="stylesheet" href="/static/components/codemirror/addon/dialog/dialog.css?v=c89dce10b44d2882a024e7befc2b63f5">
-
-    <link rel="stylesheet" href="/static/style/style.min.css?v=e79dbfdd7c8f19c96a1c8d0d7da38bdc" type="text/css"/>
-    
-
-    <link rel="stylesheet" href="/custom/custom.css" type="text/css" />
-    <script src="/static/components/es6-promise/promise.min.js?v=f004a16cb856e0ff11781d01ec5ca8fe" type="text/javascript" charset="utf-8"></script>
-    <script src="/static/components/preact/index.js?v=00a2fac73c670ce39ac53d26640eb542" type="text/javascript"></script>
-    <script src="/static/components/proptypes/index.js?v=c40890eb04df9811fcc4d47e53a29604" type="text/javascript"></script>
-    <script src="/static/components/preact-compat/index.js?v=f865e990e65ad27e3a2601d8adb48db1" type="text/javascript"></script>
-    <script src="/static/components/requirejs/require.js?v=951f856e81496aaeec2e71a1c2c0d51f" type="text/javascript" charset="utf-8"></script>
-    <script>
-      require.config({
-          
-          urlArgs: "v=20190623171706",
-          
-          baseUrl: '/static/',
-          paths: {
-            'auth/js/main': 'auth/js/main.min',
-            custom : '/custom',
-            nbextensions : '/nbextensions',
-            kernelspecs : '/kernelspecs',
-            underscore : 'components/underscore/underscore-min',
-            backbone : 'components/backbone/backbone-min',
-            jed: 'components/jed/jed',
-            jquery: 'components/jquery/jquery.min',
-            json: 'components/requirejs-plugins/src/json',
-            text: 'components/requirejs-text/text',
-            bootstrap: 'components/bootstrap/dist/js/bootstrap.min',
-            bootstraptour: 'components/bootstrap-tour/build/js/bootstrap-tour.min',
-            'jquery-ui': 'components/jquery-ui/jquery-ui.min',
-            moment: 'components/moment/min/moment-with-locales',
-            codemirror: 'components/codemirror',
-            termjs: 'components/xterm.js/xterm',
-            typeahead: 'components/jquery-typeahead/dist/jquery.typeahead.min',
-          },
-          map: { // for backward compatibility
-              "*": {
-                  "jqueryui": "jquery-ui",
-              }
-          },
-          shim: {
-            typeahead: {
-              deps: ["jquery"],
-              exports: "typeahead"
-            },
-            underscore: {
-              exports: '_'
-            },
-            backbone: {
-              deps: ["underscore", "jquery"],
-              exports: "Backbone"
-            },
-            bootstrap: {
-              deps: ["jquery"],
-              exports: "bootstrap"
-            },
-            bootstraptour: {
-              deps: ["bootstrap"],
-              exports: "Tour"
-            },
-            "jquery-ui": {
-              deps: ["jquery"],
-              exports: "$"
-            }
-          },
-          waitSeconds: 30,
-      });
-
-      require.config({
-          map: {
-              '*':{
-                'contents': 'services/contents',
-              }
-          }
-      });
-
-      // error-catching custom.js shim.
-      define("custom", function (require, exports, module) {
-          try {
-              var custom = require('custom/custom');
-              console.debug('loaded custom.js');
-              return custom;
-          } catch (e) {
-              console.error("error loading custom.js", e);
-              return {};
-          }
-      })
-
-    document.nbjs_translations = {"domain": "nbjs", "locale_data": {"nbjs": {"": {"domain": "nbjs"}}}};
-    document.documentElement.lang = navigator.language.toLowerCase();
-    </script>
-
-    
-    
-
-</head>
-
-<body class="edit_app "
- 
-data-base-url="/"
-data-file-path="bikeshare.py"
-
-  
-    data-jupyter-api-token="7b5cd8bcb36fb162b229354d554d695c01f2145b5d19d4f9"
-  
- 
-
-dir="ltr">
-
-<noscript>
-    <div id='noscript'>
-      Jupyter Notebook requires JavaScript.<br>
-      Please enable it to proceed. 
-  </div>
-</noscript>
-
-<div id="header">
-  <div id="header-container" class="container">
-  <div id="ipython_notebook" class="nav navbar-brand"><a href="/tree?token=7b5cd8bcb36fb162b229354d554d695c01f2145b5d19d4f9" title='dashboard'>
-      <img src='/static/base/images/logo.png?v=641991992878ee24c6f3826e81054a0f' alt='Jupyter Notebook'/>
-  </a></div>
-
-  
-
-<span id="save_widget" class="pull-left save_widget">
-    <span class="filename"></span>
-    <span class="last_modified"></span>
-</span>
+## Filenames
+#chicago = 'chicago.csv'
+#new_york_city = 'new_york_city.csv'
+#washington = 'washington.csv'
 
 
-  
-  
-  
-  
+def get_city():
+    '''Asks the user for a city and returns the filename for that city's bike share data.
+    Args:
+        none.
+    Returns:
+        (str) Filename for a city's bikeshare data.
+    '''
+    city = ''
+    while city.lower() not in ['chicago', 'new york', 'washington']:
+        city = input('\nHello! Let\'s explore some US bikeshare data!\n'
+                     'Would you like to see data for Chicago, New York, or'
+                     ' Washington?\n')
+        if city.lower() == 'chicago':
+            return 'chicago.csv'
+        elif city.lower() == 'new york':
+            return 'new_york_city.csv'
+        elif city.lower() == 'washington':
+            return 'washington.csv'
+        else:
+            print('Sorry, I do not understand your input. Please input either '
+                  'Chicago, New York, or Washington.')
 
-    <span id="login_widget">
-      
-        <button id="logout" class="btn btn-sm navbar-btn">Logout</button>
-      
-    </span>
+def get_time_period():
+    '''Asks the user for a time period and returns the specified filter.
+    Args:
+        none.
+    Returns:
+        (str) Time filter for the bikeshare data.
+    '''
+    time_period = ''
+    while time_period.lower() not in ['month', 'day', 'none']:
+        time_period = input('\nWould you like to filter the data by month, day,'
+                            ' or not at all? Type "none" for no time filter.\n')
+        if time_period.lower() not in ['month', 'day', 'none']:
+            print('Sorry, I do not understand your input.')
+    return time_period
 
-  
+def get_month():
+    '''Asks the user for a month and returns the specified month.
+    Args:
+        none.
+    Returns:
+        (tuple) Lower limit, upper limit of month for the bikeshare data.
+    '''
+    month_input = ''
+    months_dict = {'january': 1, 'february': 2, 'march': 3, 'april': 4,
+                   'may': 5, 'june': 6}
+    while month_input.lower() not in months_dict.keys():
+        month_input = input('\nWhich month? January, February, March, April,'
+                            ' May, or June?\n')
+        if month_input.lower() not in months_dict.keys():
+            print('Sorry, I do not understand your input. Please type in a '
+                  'month between January and June')
+    month = months_dict[month_input.lower()]
+    return ('2017-{}'.format(month), '2017-{}'.format(month + 1))
 
-  
-  
-  </div>
-  <div class="header-bar"></div>
+def get_day():
+    '''Asks the user for a day and returns the specified day.
+    Args:
+        none.
+    Returns:
+        (tuple) Lower limit, upper limit of date for the bikeshare data.
+    '''
+    this_month = get_month()[0]
+    month = int(this_month[5:])
+    valid_date = False
+    while valid_date == False:
+        is_int = False
+        day = input('\nWhich day? Please type your response as an integer.\n')
+        while is_int == False:
+            try:
+                day = int(day)
+                is_int = True
+            except ValueError:
+                print('Sorry, I do not understand your input. Please type your'
+                      ' response as an integer.')
+                day = input('\nWhich day? Please type your response as an integer.\n')
+        try:
+            start_date = datetime(2017, month, day)
+            valid_date = True
+        except ValueError as e:
+            print(str(e).capitalize())
+    end_date = start_date + timedelta(days=1)
+    return (str(start_date), str(end_date))
 
-  
+def popular_month(df):
+    '''Finds and prints the most popular month for start time.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    months = ['January', 'February', 'March', 'April', 'May', 'June']
+    index = int(df['start_time'].dt.month.mode())
+    most_pop_month = months[index - 1]
+    print('The most popular month is {}.'.format(most_pop_month))
 
-<div id="menubar-container" class="container">
-  <div id="menubar">
-    <div id="menus" class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-          <p  class="navbar-text indicator_area">
-          <span id="current-mode" >current mode</span>
-          </p>
-        <button type="button" class="btn btn-default navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <i class="fa fa-bars"></i>
-          <span class="navbar-text">Menu</span>
-        </button>
-        <ul class="nav navbar-nav navbar-right">
-          <li id="notification_area"></li>
-        </ul>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">File</a>
-              <ul id="file-menu" class="dropdown-menu">
-                <li id="new-file"><a href="#">New</a></li>
-                <li id="save-file"><a href="#">Save</a></li>
-                <li id="rename-file"><a href="#">Rename</a></li>
-                <li id="download-file"><a href="#">Download</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Edit</a>
-              <ul id="edit-menu" class="dropdown-menu">
-                <li id="menu-find"><a href="#">Find</a></li>
-                <li id="menu-replace"><a href="#">Find &amp; Replace</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Key Map</li>
-                <li id="menu-keymap-default"><a href="#">Default<i class="fa"></i></a></li>
-                <li id="menu-keymap-sublime"><a href="#">Sublime Text<i class="fa"></i></a></li>
-                <li id="menu-keymap-vim"><a href="#">Vim<i class="fa"></i></a></li>
-                <li id="menu-keymap-emacs"><a href="#">emacs<i class="fa"></i></a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">View</a>
-              <ul id="view-menu" class="dropdown-menu">
-              <li id="toggle_header" title="Show/Hide the logo and notebook title (above menu bar)">
-              <a href="#">Toggle Header</a></li>
-              <li id="menu-line-numbers"><a href="#">Toggle Line Numbers</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Language</a>
-              <ul id="mode-menu" class="dropdown-menu">
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+def popular_day(df):
+    '''Finds and prints the most popular day of week (Monday, Tuesday, etc.) for start time.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+                    'Saturday', 'Sunday']
+    index = int(df['start_time'].dt.dayofweek.mode())
+    most_pop_day = days_of_week[index]
+    print('The most popular day of week for start time is {}.'.format(most_pop_day))
 
-<div class="lower-header-bar"></div>
+def popular_hour(df):
+    '''Finds and prints the most popular hour of day for start time.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    most_pop_hour = int(df['start_time'].dt.hour.mode())
+    if most_pop_hour == 0:
+        am_pm = 'am'
+        pop_hour_readable = 12
+    elif 1 <= most_pop_hour < 13:
+        am_pm = 'am'
+        pop_hour_readable = most_pop_hour
+    elif 13 <= most_pop_hour < 24:
+        am_pm = 'pm'
+        pop_hour_readable = most_pop_hour - 12
+    print('The most popular hour of day for start time is {}{}.'.format(pop_hour_readable, am_pm))
+
+def trip_duration(df):
+    '''Finds and prints the total trip duration and average trip duration in
+       hours, minutes, and seconds.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    total_duration = df['trip_duration'].sum()
+    minute, second = divmod(total_duration, 60)
+    hour, minute = divmod(minute, 60)
+    print('The total trip duration is {} hours, {} minutes and {}'
+          ' seconds.'.format(hour, minute, second))
+    average_duration = round(df['trip_duration'].mean())
+    m, s = divmod(average_duration, 60)
+    if m > 60:
+        h, m = divmod(m, 60)
+        print('The average trip duration is {} hours, {} minutes and {}'
+              ' seconds.'.format(h, m, s))
+    else:
+        print('The average trip duration is {} minutes and {} seconds.'.format(m, s))
+
+def popular_stations(df):
+    '''Finds and prints the most popular start station and most popular end station.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    pop_start = df['start_station'].mode().to_string(index = False)
+    pop_end = df['end_station'].mode().to_string(index = False)
+    print('The most popular start station is {}.'.format(pop_start))
+    print('The most popular end station is {}.'.format(pop_end))
+
+def popular_trip(df):
+    '''Finds and prints the most popular trip.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    most_pop_trip = df['journey'].mode().to_string(index = False)
+    # The 'journey' column is created in the statistics() function.
+    print('The most popular trip is {}.'.format(most_pop_trip))
+
+def users(df):
+    '''Finds and prints the counts of each user type.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    subs = df.query('user_type == "Subscriber"').user_type.count()
+    cust = df.query('user_type == "Customer"').user_type.count()
+    print('There are {} Subscribers and {} Customers.'.format(subs, cust))
+
+def gender(df):
+    '''Finds and prints the counts of gender.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    male_count = df.query('gender == "Male"').gender.count()
+    female_count = df.query('gender == "Male"').gender.count()
+    print('There are {} male users and {} female users.'.format(male_count, female_count))
+
+def birth_years(df):
+    ''' Finds and prints the earliest (i.e. oldest user), most recent (i.e.
+        youngest user), and most popular birth years.
+    Args:
+        bikeshare dataframe
+    Returns:
+        none
+    '''
+    earliest = int(df['birth_year'].min())
+    latest = int(df['birth_year'].max())
+    mode = int(df['birth_year'].mode())
+    print('The oldest users are born in {}.\nThe youngest users are born in {}.'
+          '\nThe most popular birth year is {}.'.format(earliest, latest, mode))
+
+def display_data(df):
+    '''Displays five lines of data if the user specifies that they would like to.
+    After displaying five lines, ask the user if they would like to see five more,
+    continuing asking until they say stop.
+    Args:
+        data frame
+    Returns:
+        none
+    '''
+    def is_valid(display):
+        if display.lower() in ['yes', 'no']:
+            return True
+        else:
+            return False
+    head = 0
+    tail = 5
+    valid_input = False
+    while valid_input == False:
+        display = input('\nWould you like to view individual trip data? '
+                        'Type \'yes\' or \'no\'.\n')
+        valid_input = is_valid(display)
+        if valid_input == True:
+            break
+        else:
+            print("Sorry, I do not understand your input. Please type 'yes' or"
+                  " 'no'.")
+    if display.lower() == 'yes':
+        # prints every column except the 'journey' column created in statistics()
+        print(df[df.columns[0:-1]].iloc[head:tail])
+        display_more = ''
+        while display_more.lower() != 'no':
+            valid_input_2 = False
+            while valid_input_2 == False:
+                display_more = input('\nWould you like to view more individual'
+                                     ' trip data? Type \'yes\' or \'no\'.\n')
+                valid_input_2 = is_valid(display_more)
+                if valid_input_2 == True:
+                    break
+                else:
+                    print("Sorry, I do not understand your input. Please type "
+                          "'yes' or 'no'.")
+            if display_more.lower() == 'yes':
+                head += 5
+                tail += 5
+                print(df[df.columns[0:-1]].iloc[head:tail])
+            elif display_more.lower() == 'no':
+                break
 
 
-</div>
+def statistics():
+    '''Calculates and prints out the descriptive statistics about a city and
+    time period specified by the user via raw input.
+    Args:
+        none.
+    Returns:
+        none.
+    '''
+    # Filter by city (Chicago, New York, Washington)
+    city = get_city()
+    print('Loading data...')
+    df = pd.read_csv(city, parse_dates = ['Start Time', 'End Time'])
 
-<div id="site">
+    # change all column names to lowercase letters and replace spaces with underscores
+    new_labels = []
+    for col in df.columns:
+        new_labels.append(col.replace(' ', '_').lower())
+    df.columns = new_labels
+
+    # increases the column width so that the long strings in the 'journey'
+    # column can be displayed fully
+    pd.set_option('max_colwidth', 100)
+
+    # creates a 'journey' column that concatenates 'start_station' with
+    # 'end_station' for the use popular_trip() function
+    df['journey'] = df['start_station'].str.cat(df['end_station'], sep=' to ')
+
+    # Filter by time period (month, day, none)
+    time_period = get_time_period()
+    if time_period == 'none':
+        df_filtered = df
+    elif time_period == 'month' or time_period == 'day':
+        if time_period == 'month':
+            filter_lower, filter_upper = get_month()
+        elif time_period == 'day':
+            filter_lower, filter_upper = get_day()
+        print('Filtering data...')
+        df_filtered = df[(df['start_time'] >= filter_lower) & (df['start_time'] < filter_upper)]
+    print('\nCalculating the first statistic...')
+
+    if time_period == 'none':
+        start_time = time.time()
+
+        # What is the most popular month for start time?
+        popular_month(df_filtered)
+        print("That took %s seconds." % (time.time() - start_time))
+        print("\nCalculating the next statistic...")
+
+    if time_period == 'none' or time_period == 'month':
+        start_time = time.time()
+
+        # What is the most popular day of week (Monday, Tuesday, etc.) for start time?
+        popular_day(df_filtered)
+        print("That took %s seconds." % (time.time() - start_time))
+        print("\nCalculating the next statistic...")
+        start_time = time.time()
+
+    # What is the most popular hour of day for start time?
+    popular_hour(df_filtered)
+    print("That took %s seconds." % (time.time() - start_time))
+    print("\nCalculating the next statistic...")
+    start_time = time.time()
+
+    # What is the total trip duration and average trip duration?
+    trip_duration(df_filtered)
+    print("That took %s seconds." % (time.time() - start_time))
+    print("\nCalculating the next statistic...")
+    start_time = time.time()
+
+    # What is the most popular start station and most popular end station?
+    popular_stations(df_filtered)
+    print("That took %s seconds." % (time.time() - start_time))
+    print("\nCalculating the next statistic...")
+    start_time = time.time()
+
+    # What is the most popular trip?
+    popular_trip(df_filtered)
+    print("That took %s seconds." % (time.time() - start_time))
+    print("\nCalculating the next statistic...")
+    start_time = time.time()
+
+    # What are the counts of each user type?
+    users(df_filtered)
+    print("That took %s seconds." % (time.time() - start_time))
+
+    if city == 'chicago.csv' or city == 'new_york_city.csv':
+        print("\nCalculating the next statistic...")
+        start_time = time.time()
+
+        # What are the counts of gender?
+        gender(df_filtered)
+        print("That took %s seconds." % (time.time() - start_time))
+        print("\nCalculating the next statistic...")
+        start_time = time.time()
+
+        # What are the earliest (i.e. oldest user), most recent (i.e. youngest
+        # user), and most popular birth years?
+        birth_years(df_filtered)
+        print("That took %s seconds." % (time.time() - start_time))
+
+    # Display five lines of data at a time if user specifies that they would like to
+    display_data(df_filtered)
+
+    # Restart?
+    restart = input('\nWould you like to restart? Type \'yes\' or \'no\'.\n')
+    while restart.lower() not in ['yes', 'no']:
+        print("Invalid input. Please type 'yes' or 'no'.")
+        restart = input('\nWould you like to restart? Type \'yes\' or \'no\'.\n')
+    if restart.lower() == 'yes':
+        statistics()
 
 
-<div id="texteditor-backdrop">
-<div id="texteditor-container" class="container"></div>
-</div>
-
-
-</div>
-
-
-
-
-
-
-    
-
-
-<script src="/static/edit/js/main.min.js?v=ff500aa0e8bbfd58cff8b86b087bc00c" type="text/javascript" charset="utf-8"></script>
-
-
-<script type='text/javascript'>
-  function _remove_token_from_url() {
-    if (window.location.search.length <= 1) {
-      return;
-    }
-    var search_parameters = window.location.search.slice(1).split('&');
-    for (var i = 0; i < search_parameters.length; i++) {
-      if (search_parameters[i].split('=')[0] === 'token') {
-        // remote token from search parameters
-        search_parameters.splice(i, 1);
-        var new_search = '';
-        if (search_parameters.length) {
-          new_search = '?' + search_parameters.join('&');
-        }
-        var new_url = window.location.origin + 
-                      window.location.pathname + 
-                      new_search + 
-                      window.location.hash;
-        window.history.replaceState({}, "", new_url);
-        return;
-      }
-    }
-  }
-  _remove_token_from_url();
-</script>
-</body>
-
-</html>
+if __name__ == "__main__":
+	statistics()
