@@ -4,9 +4,9 @@ from datetime import timedelta
 import time
 
 ## Filenames
-#chicago = 'chicago.csv'
-#new_york_city = 'new_york_city.csv'
-#washington = 'washington.csv'
+chicago = 'chicago.csv'
+new_york_city = 'new_york_city.csv'
+washington = 'washington.csv'
 
 
 def get_city():
@@ -15,7 +15,7 @@ def get_city():
     #    none.
     #Returns:
     #    (str) Filename for a city's bikeshare data.
-    '''
+    #
     city = ''
     while city.lower() not in ['chicago', 'new york', 'washington']:
         city = input('\nHello! Let\'s explore some US bikeshare data!\n'
@@ -32,7 +32,7 @@ def get_city():
                   'Chicago, New York, or Washington.')
 
 def get_time_period():
-    '''Asks the user for a time period and returns the specified filter.
+    Asks the user for a time period and returns the specified filter.
     Args:
         none.
     Returns:
